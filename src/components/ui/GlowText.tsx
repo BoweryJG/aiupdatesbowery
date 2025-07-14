@@ -1,6 +1,7 @@
 import React from 'react';
 import { cn } from '../../lib/utils';
-import { motion, HTMLMotionProps } from 'framer-motion';
+import { motion } from 'framer-motion';
+import type { HTMLMotionProps } from 'framer-motion';
 
 interface GlowTextProps extends HTMLMotionProps<"span"> {
   as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Layout } from './components/Layout';
 import { GlowText } from './components/ui/GlowText';
 import { FilterBar } from './components/ui/FilterBar';
@@ -33,7 +33,7 @@ function App() {
               <Sparkles className="w-8 h-8 text-electric-cyan" />
             </motion.div>
             <GlowText as="h1" className="text-5xl lg:text-6xl">
-              AI Intelligence Hub
+              AI Updates Bowery
             </GlowText>
             <motion.div
               animate={{ rotate: -360 }}

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Glass } from './Glass';
-import { GlowText } from './GlowText';
 import { cn } from '../../lib/utils';
 import type { AIModel } from '../../types/ai';
 import { Sparkles, Zap, Brain, Cpu, Image, MessageSquare, Search, Bot } from 'lucide-react';
