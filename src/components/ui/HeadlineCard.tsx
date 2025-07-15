@@ -37,16 +37,26 @@ export function HeadlineCard({ news, onClick, isCompact = false }: HeadlineCardP
         className={`h-full cursor-pointer border-2 ${importanceColor} hover:border-opacity-100 border-opacity-50 transition-all`}
         onClick={onClick}
       >
-        {news.image_url && !isCompact && (
-          <div className="h-48 overflow-hidden rounded-t-lg">
-            <img 
-              src={news.image_url} 
-              alt={news.title}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
-          </div>
-        )}
+        {(() => {
+          const imageUrl = news.image_url 
+            ? (typeof news.image_url === 'object' && news.image_url.$ 
+                ? news.image_url.$.url 
+                : typeof news.image_url === 'string' 
+                  ? news.image_url 
+                  : null)
+            : null;
+          
+          return imageUrl && !isCompact ? (
+            <div className="h-48 overflow-hidden rounded-t-lg">
+              <img 
+                src={imageUrl} 
+                alt={news.title}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+            </div>
+          ) : null;
+        })()}
 
         <div className={`p-6 ${isCompact ? 'py-4' : ''}`}>
           {/* Header */}

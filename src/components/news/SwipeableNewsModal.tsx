@@ -221,18 +221,28 @@ export function SwipeableNewsModal({ isOpen, onClose, articles, initialIndex = 0
                 </div>
 
                 {/* Image */}
-                {currentArticle.image_url && (
-                  <div className="px-4 sm:px-6 md:px-8">
-                    <div className="relative h-48 sm:h-64 md:h-96 rounded-lg sm:rounded-xl md:rounded-2xl overflow-hidden">
-                      <img 
-                        src={currentArticle.image_url} 
-                        alt={currentArticle.title}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                {(() => {
+                  const imageUrl = currentArticle.image_url 
+                    ? (typeof currentArticle.image_url === 'object' && currentArticle.image_url.$ 
+                        ? currentArticle.image_url.$.url 
+                        : typeof currentArticle.image_url === 'string' 
+                          ? currentArticle.image_url 
+                          : null)
+                    : null;
+                  
+                  return imageUrl ? (
+                    <div className="px-4 sm:px-6 md:px-8">
+                      <div className="relative h-48 sm:h-64 md:h-96 rounded-lg sm:rounded-xl md:rounded-2xl overflow-hidden">
+                        <img 
+                          src={imageUrl} 
+                          alt={currentArticle.title}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                      </div>
                     </div>
-                  </div>
-                )}
+                  ) : null;
+                })()}
 
                 {/* Content */}
                 <div className="p-4 sm:p-6 md:p-8 pt-4 sm:pt-6">

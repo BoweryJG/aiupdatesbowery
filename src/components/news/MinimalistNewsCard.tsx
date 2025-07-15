@@ -16,6 +16,25 @@ export function MinimalistNewsCard({ news, onClick, index = 0 }: MinimalistNewsC
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   
+  // Extract image URL from nested structure
+  const getImageUrl = () => {
+    if (!news.image_url) return null;
+    
+    // Handle nested JSON structure from RSS feeds
+    if (typeof news.image_url === 'object' && news.image_url.$) {
+      return news.image_url.$.url;
+    }
+    
+    // Handle string URLs
+    if (typeof news.image_url === 'string') {
+      return news.image_url;
+    }
+    
+    return null;
+  };
+  
+  const imageUrl = getImageUrl();
+  
   const getNewsTypeAccent = (type?: string) => {
     switch (type) {
       case 'ai': return 'from-purple-500 to-blue-500';
@@ -45,7 +64,7 @@ export function MinimalistNewsCard({ news, onClick, index = 0 }: MinimalistNewsC
   // Fallback image - a branded placeholder
   const fallbackImage = `data:image/svg+xml,%3Csvg width='800' height='450' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='gradient' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23111827;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%231f2937;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='800' height='450' fill='url(%23gradient)'/%3E%3Ctext x='50%25' y='50%25' font-family='system-ui' font-size='24' fill='%236b7280' text-anchor='middle' dominant-baseline='middle'%3EAI Updates%3C/text%3E%3C/svg%3E`;
 
-  const shouldShowImage = news.image_url && !imageError;
+  const shouldShowImage = imageUrl && !imageError;
 
   return (
     <motion.article
@@ -76,7 +95,7 @@ export function MinimalistNewsCard({ news, onClick, index = 0 }: MinimalistNewsC
           
           {/* Image */}
           <img
-            src={shouldShowImage ? news.image_url! : fallbackImage}
+            src={shouldShowImage ? imageUrl! : fallbackImage}
             alt={news.title}
             loading="lazy"
             onError={handleImageError}

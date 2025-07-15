@@ -207,15 +207,25 @@ export function MobilePrismaticStream({ articles, onVoiceCommand, loading = fals
             data-type={article.news_type || 'ai'}
           >
             {/* Micro thumbnail */}
-            {article.image_url && (
-              <img 
-                className="strip-thumbnail"
-                src={article.image_url}
-                alt=""
-                loading="lazy"
-                decoding="async"
-              />
-            )}
+            {(() => {
+              const imageUrl = article.image_url 
+                ? (typeof article.image_url === 'object' && article.image_url.$ 
+                    ? article.image_url.$.url 
+                    : typeof article.image_url === 'string' 
+                      ? article.image_url 
+                      : null)
+                : null;
+              
+              return imageUrl ? (
+                <img 
+                  className="strip-thumbnail"
+                  src={imageUrl}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : null;
+            })()}
             
             {/* Text content */}
             <div className="strip-text">

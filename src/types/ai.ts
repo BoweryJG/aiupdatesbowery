@@ -73,7 +73,7 @@ export interface AINews {
   companies: string[];
   sentiment: 'positive' | 'negative' | 'neutral' | null;
   importance_score: number | null;
-  image_url: string | null;
+  image_url: string | { $: { url: string; width?: string; height?: string } } | null;
   author: string | null;
   reading_time_minutes: number | null;
   is_featured: boolean;
