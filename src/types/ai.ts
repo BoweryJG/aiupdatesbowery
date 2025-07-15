@@ -1,3 +1,4 @@
+// Detailed AI model information
 export interface AIModel {
   id: number;
   model_name: string;
@@ -6,8 +7,14 @@ export interface AIModel {
   update_type: string;
   description: string;
   impact_score: number | null;
+  impact_history?: { date: string; impact: number }[];
   created_at: string;
   updated_at: string;
+}
+
+export interface ImpactHistoryEntry {
+  date: string;
+  impact: number;
 }
 
 export type AICategory = 

@@ -3,6 +3,7 @@ import { Layout } from './components/Layout';
 import { GlowText } from './components/ui/GlowText';
 import { FilterBar } from './components/ui/FilterBar';
 import { ModelCard } from './components/ui/ModelCard';
+import { ModelDetailsModal } from './components/ui/ModelDetailsModal';
 import { Glass } from './components/ui/Glass';
 import { TodaysHeadlines } from './components/TodaysHeadlines';
 import { NewsFilterBar } from './components/ui/NewsFilterBar';
@@ -12,9 +13,11 @@ import { useAIStore } from './store/aiStore';
 import { useNewsStore } from './store/newsStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, TrendingUp, Globe, Newspaper, Brain, Calendar, BarChart3 } from 'lucide-react';
+import type { AIModel } from './types/ai';
 
 function App() {
   const [view, setView] = useState<'headlines' | 'models' | 'week' | 'month'>('headlines');
+  const [selectedModel, setSelectedModel] = useState<AIModel | null>(null);
   const { fetchModels, getFilteredModels, loading, error } = useAIStore();
   const { todaysHeadlines } = useNewsStore();
   const filteredModels = getFilteredModels();
@@ -200,10 +203,7 @@ function App() {
               <ModelCard
                 key={`${model.id}-${model.model_name}`}
                 model={model}
-                onClick={() => {
-                  // TODO: Open detailed view
-                  console.log('Model clicked:', model);
-                }}
+                onClick={() => setSelectedModel(model)}
               />
             ))}
           </AnimatePresence>
@@ -219,6 +219,12 @@ function App() {
           </>
         )}
       </div>
+      {selectedModel && (
+        <ModelDetailsModal
+          model={selectedModel}
+          onClose={() => setSelectedModel(null)}
+        />
+      )}
     </Layout>
   );
 }
