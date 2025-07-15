@@ -1,0 +1,36 @@
+name: Fetch AI News Daily
+
+on:
+  schedule:
+    # Run at 5 AM EST (10 AM UTC) every day
+    - cron: '0 10 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  fetch-news:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    
+    - name: Install dependencies
+      run: |
+        npm install @supabase/supabase-js
+        npm install rss-parser
+        npm install node-fetch
+    
+    - name: Fetch and Insert AI News
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
+      run: |
+        node scripts/fetch-daily-news.mjs
+    
+    - name: Log Success
+      run: echo "AI News fetched successfully at $(date)"
