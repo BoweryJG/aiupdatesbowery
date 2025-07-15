@@ -23,7 +23,7 @@ export const GlowText: React.FC<GlowTextProps> = ({
     warning: 'from-solar-orange to-quantum-purple',
   };
 
-  const MotionComponent = motion[Component as keyof typeof motion] as any;
+  const MotionComponent = motion[Component as keyof typeof motion] as React.FC<HTMLMotionProps<typeof Component>>;
 
   return (
     <MotionComponent

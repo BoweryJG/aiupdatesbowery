@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import type { AIModel } from '../types/ai';
+import type { AIModel, AINews, NewsFilters } from '../types/ai';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
@@ -50,5 +50,99 @@ export const aiApi = {
 
     if (error) throw error;
     return data || [];
+  }
+};
+
+// API functions for AI news
+export const newsApi = {
+  async getTodaysHeadlines(): Promise<AINews[]> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const { data, error } = await supabase
+      .from('ai_news')
+      .select('*')
+      .gte('published_date', today.toISOString())
+      .order('importance_score', { ascending: false, nullsFirst: false })
+      .order('published_date', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  },
+
+  async getNewsWithFilters(filters: NewsFilters): Promise<AINews[]> {
+    let query = supabase.from('ai_news').select('*');
+
+    // Apply date range filter
+    if (filters.dateRange) {
+      const now = new Date();
+      const startDate = new Date();
+      
+      switch (filters.dateRange) {
+        case 'today':
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case 'week':
+          startDate.setDate(now.getDate() - 7);
+          break;
+        case 'month':
+          startDate.setMonth(now.getMonth() - 1);
+          break;
+      }
+      
+      if (filters.dateRange !== 'all') {
+        query = query.gte('published_date', startDate.toISOString());
+      }
+    }
+
+    // Apply category filter
+    if (filters.category) {
+      query = query.eq('category', filters.category);
+    }
+
+    // Apply companies filter
+    if (filters.companies && filters.companies.length > 0) {
+      query = query.overlaps('companies', filters.companies);
+    }
+
+    // Apply tags filter
+    if (filters.tags && filters.tags.length > 0) {
+      query = query.overlaps('tags', filters.tags);
+    }
+
+    // Apply importance score filter
+    if (filters.minImportanceScore) {
+      query = query.gte('importance_score', filters.minImportanceScore);
+    }
+
+    // Apply search term
+    if (filters.searchTerm) {
+      query = query.or(
+        `title.ilike.%${filters.searchTerm}%,content.ilike.%${filters.searchTerm}%,summary.ilike.%${filters.searchTerm}%`
+      );
+    }
+
+    // Order by importance and date
+    query = query
+      .order('published_date', { ascending: false })
+      .order('importance_score', { ascending: false, nullsFirst: false });
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
+  },
+
+  async getTrendingTopics(): Promise<Array<{ tag: string; mention_count: number }>> {
+    const { data, error } = await supabase
+      .from('trending_topics')
+      .select('*');
+
+    if (error) throw error;
+    return data || [];
+  },
+
+  async incrementViewCount(newsId: string): Promise<void> {
+    const { error } = await supabase.rpc('increment_view_count', { news_id: newsId });
+    if (error) throw error;
   }
 };

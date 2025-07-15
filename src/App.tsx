@@ -1,15 +1,20 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Layout } from './components/Layout';
 import { GlowText } from './components/ui/GlowText';
 import { FilterBar } from './components/ui/FilterBar';
 import { ModelCard } from './components/ui/ModelCard';
 import { Glass } from './components/ui/Glass';
+import { TodaysHeadlines } from './components/TodaysHeadlines';
+import { NewsFilterBar } from './components/ui/NewsFilterBar';
 import { useAIStore } from './store/aiStore';
+import { useNewsStore } from './store/newsStore';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, TrendingUp, Globe } from 'lucide-react';
+import { Sparkles, TrendingUp, Globe, Newspaper, Brain } from 'lucide-react';
 
 function App() {
+  const [view, setView] = useState<'headlines' | 'models'>('headlines');
   const { fetchModels, getFilteredModels, loading, error } = useAIStore();
+  const { todaysHeadlines } = useNewsStore();
   const filteredModels = getFilteredModels();
 
   useEffect(() => {
@@ -47,20 +52,60 @@ function App() {
           </p>
         </motion.div>
 
+        {/* View Toggle */}
+        <div className="flex justify-center mb-8">
+          <Glass className="inline-flex p-1">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setView('headlines')}
+              className={`px-6 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
+                view === 'headlines' 
+                  ? 'bg-electric-cyan text-black' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <Newspaper className="w-4 h-4" />
+              Today's Headlines
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setView('models')}
+              className={`px-6 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
+                view === 'models' 
+                  ? 'bg-quantum-purple text-white' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <Brain className="w-4 h-4" />
+              AI Models
+            </motion.button>
+          </Glass>
+        </div>
+
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Glass className="p-6 text-center">
             <TrendingUp className="w-8 h-8 text-electric-cyan mx-auto mb-2" />
             <h3 className="text-2xl font-bold font-mono text-white mb-1">
-              {filteredModels.filter(m => m.impact_score && m.impact_score >= 9).length}
+              {view === 'headlines' 
+                ? todaysHeadlines.filter(n => n.importance_score && n.importance_score >= 8).length
+                : filteredModels.filter(m => m.impact_score && m.impact_score >= 9).length
+              }
             </h3>
-            <p className="text-sm text-gray-400">Critical Updates</p>
+            <p className="text-sm text-gray-400">
+              {view === 'headlines' ? 'Breaking News' : 'Critical Updates'}
+            </p>
           </Glass>
           
           <Glass className="p-6 text-center">
             <div className="w-8 h-8 rounded-full bg-gradient-to-r from-electric-cyan to-quantum-purple mx-auto mb-2" />
             <h3 className="text-2xl font-bold font-mono text-white mb-1">
-              {new Set(filteredModels.map(m => m.company).filter(Boolean)).size}
+              {view === 'headlines'
+                ? new Set(todaysHeadlines.flatMap(n => n.companies)).size
+                : new Set(filteredModels.map(m => m.company).filter(Boolean)).size
+              }
             </h3>
             <p className="text-sm text-gray-400">Active Companies</p>
           </Glass>
@@ -78,17 +123,24 @@ function App() {
               ))}
             </div>
             <h3 className="text-2xl font-bold font-mono text-white mb-1">
-              {filteredModels.length}
+              {view === 'headlines' ? todaysHeadlines.length : filteredModels.length}
             </h3>
-            <p className="text-sm text-gray-400">Total Models</p>
+            <p className="text-sm text-gray-400">
+              {view === 'headlines' ? "Today's Articles" : 'Total Models'}
+            </p>
           </Glass>
         </div>
 
         {/* Filter Bar */}
-        <FilterBar />
+        {view === 'headlines' ? <NewsFilterBar /> : <FilterBar />}
 
-        {/* Loading State */}
-        {loading && (
+        {/* Main Content */}
+        {view === 'headlines' ? (
+          <TodaysHeadlines />
+        ) : (
+          <>
+            {/* Loading State */}
+            {loading && (
           <div className="flex items-center justify-center py-20">
             <motion.div
               animate={{ rotate: 360 }}
@@ -125,12 +177,14 @@ function App() {
           </AnimatePresence>
         </motion.div>
 
-        {/* Empty State */}
-        {!loading && !error && filteredModels.length === 0 && (
-          <Glass className="p-12 text-center">
-            <Sparkles className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-            <p className="text-gray-400">No AI models found matching your criteria</p>
-          </Glass>
+            {/* Empty State */}
+            {!loading && !error && filteredModels.length === 0 && (
+              <Glass className="p-12 text-center">
+                <Sparkles className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+                <p className="text-gray-400">No AI models found matching your criteria</p>
+              </Glass>
+            )}
+          </>
         )}
       </div>
     </Layout>
