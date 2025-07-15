@@ -5,7 +5,7 @@ import { SwipeableNewsModal } from './SwipeableNewsModal';
 import { MobilePrismaticStream } from './MobilePrismaticStream';
 import { VoiceInput } from '../voice/VoiceInput';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Grid3x3, Layers, Mic } from 'lucide-react';
+import { Grid3x3, Layers } from 'lucide-react';
 import type { AINews } from '../../types/ai';
 
 export function NewsAggregator() {

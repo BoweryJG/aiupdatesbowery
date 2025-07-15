@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, MicOff, Loader2, X } from 'lucide-react';
+import { Mic, Loader2, X } from 'lucide-react';
 import { voiceCommandProcessor } from '../../services/voiceCommands';
 
 interface VoiceInputProps {

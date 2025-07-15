@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Clock, MapPin, TrendingUp, AlertCircle } from 'lucide-react';
+import { Clock, MapPin, AlertCircle } from 'lucide-react';
 import type { AINews } from '../../types/ai';
 import { formatDistanceToNow } from '../../utils/dateUtils';
 import { useLinkValidation } from '../../services/linkValidator';

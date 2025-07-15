@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { AINews } from '../../types/ai';
 import { formatDistanceToNow } from '../../utils/dateUtils';
 import '../../styles/mobile-prismatic-stream.css';

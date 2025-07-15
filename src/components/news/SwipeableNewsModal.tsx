@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, PanInfo } from 'framer-motion';
+import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight, ExternalLink, Clock, Building2, MapPin, Globe } from 'lucide-react';
 import type { AINews } from '../../types/ai';
 import { formatDistanceToNow } from '../../utils/dateUtils';
-import { linkValidator, useLinkValidation } from '../../services/linkValidator';
+import { useLinkValidation } from '../../services/linkValidator';
 
 interface SwipeableNewsModalProps {
   isOpen: boolean;
@@ -50,7 +50,7 @@ export function SwipeableNewsModal({ isOpen, onClose, articles, initialIndex = 0
     }
   };
 
-  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+  const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const threshold = 50;
     if (info.offset.x < -threshold) {
       handleNext();
@@ -91,10 +91,6 @@ export function SwipeableNewsModal({ isOpen, onClose, articles, initialIndex = 0
     })
   };
 
-  const swipeConfidenceThreshold = 10000;
-  const swipePower = (offset: number, velocity: number) => {
-    return Math.abs(offset) * velocity;
-  };
 
   const getCategoryColor = (newsType?: string) => {
     switch (newsType) {
