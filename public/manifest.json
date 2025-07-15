@@ -1,0 +1,32 @@
+{
+  "name": "Bowery Intelligence - AI News & Updates",
+  "short_name": "Bowery Intel",
+  "description": "Real-time AI news aggregation and intelligence platform",
+  "theme_color": "#000000",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["news", "technology", "artificial intelligence"],
+  "lang": "en-US",
+  "dir": "ltr"
+}

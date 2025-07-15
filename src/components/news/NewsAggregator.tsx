@@ -4,8 +4,9 @@ import { MinimalistNewsCard } from './MinimalistNewsCard';
 import { SwipeableNewsModal } from './SwipeableNewsModal';
 import { MobilePrismaticStream } from './MobilePrismaticStream';
 import { VoiceInput } from '../voice/VoiceInput';
+import { LoadingSkeleton } from '../LoadingSkeleton';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Grid3x3, Layers } from 'lucide-react';
+import { Grid3x3, Layers, Search, RefreshCw } from 'lucide-react';
 import type { AINews } from '../../types/ai';
 
 export function NewsAggregator() {
@@ -123,6 +124,8 @@ export function NewsAggregator() {
         <MobilePrismaticStream 
           articles={news}
           onVoiceCommand={handleVoiceCommand}
+          loading={loading}
+          onRefresh={() => fetchNewsWithFilters()}
         />
         <VoiceInput 
           onCommand={handleVoiceCommand}
@@ -136,12 +139,9 @@ export function NewsAggregator() {
   return (
     <div className="min-h-screen bg-black">
       {/* View mode toggle */}
-      <div className="sticky top-0 z-40 bg-black/80 backdrop-blur-xl border-b border-white/10">
+      <div className="bg-black/80 backdrop-blur-xl border-b border-white/10">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-light text-white">News Stream</h1>
-            
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-end gap-4">
               {/* View toggle */}
               <div className="flex bg-white/5 rounded-lg p-1">
                 <button
@@ -171,12 +171,55 @@ export function NewsAggregator() {
             </div>
           </div>
         </div>
-      </div>
 
       {/* Content */}
       <div className="container mx-auto px-4 py-8">
         <AnimatePresence mode="wait">
-          {viewMode === 'stream' ? (
+          {/* Loading state */}
+          {loading && news.length === 0 ? (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className={viewMode === 'stream' ? 'max-w-4xl mx-auto' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'}
+            >
+              <LoadingSkeleton 
+                variant={viewMode === 'stream' ? 'news-strip' : 'news-card'} 
+                count={viewMode === 'stream' ? 8 : 12} 
+              />
+            </motion.div>
+          ) : news.length === 0 ? (
+            /* No results state */
+            <motion.div
+              key="no-results"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="max-w-2xl mx-auto text-center py-20"
+            >
+              <Search className="w-20 h-20 text-gray-600 mx-auto mb-6" />
+              <h3 className="text-2xl font-medium text-gray-300 mb-3">No articles found</h3>
+              <p className="text-gray-500 mb-8">
+                Try adjusting your filters or search terms to find more articles
+              </p>
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setCategory(undefined);
+                  setCompaniesFilter([]);
+                  setMinImportanceScore(undefined);
+                  setDateRange('all');
+                  fetchNewsWithFilters();
+                }}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white 
+                         rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Clear all filters
+              </button>
+            </motion.div>
+          ) : viewMode === 'stream' ? (
             <motion.div
               key="stream"
               initial={{ opacity: 0, x: -20 }}
@@ -187,6 +230,8 @@ export function NewsAggregator() {
               <MobilePrismaticStream 
                 articles={news}
                 onVoiceCommand={handleVoiceCommand}
+                loading={loading}
+                onRefresh={() => fetchNewsWithFilters()}
               />
             </motion.div>
           ) : (

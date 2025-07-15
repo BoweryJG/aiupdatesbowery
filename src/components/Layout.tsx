@@ -1,4 +1,5 @@
 import React from 'react';
+import { Navbar } from './Navbar';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -25,6 +26,9 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           backgroundSize: '50px 50px'
         }}
       />
+
+      {/* Navigation */}
+      <Navbar />
 
       {/* Content */}
       <div className="relative z-10">

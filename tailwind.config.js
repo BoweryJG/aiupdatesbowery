@@ -25,6 +25,7 @@ export default {
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'float': 'float 6s ease-in-out infinite',
         'glow': 'glow 2s ease-in-out infinite alternate',
+        'shimmer': 'shimmer 2s ease-in-out infinite',
       },
       keyframes: {
         float: {
@@ -34,6 +35,10 @@ export default {
         glow: {
           '0%': { filter: 'brightness(1) blur(0px)' },
           '100%': { filter: 'brightness(1.2) blur(2px)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
         },
       },
     },

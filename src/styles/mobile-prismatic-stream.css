@@ -34,6 +34,8 @@
   position: relative;
   /* Enable momentum scrolling on iOS */
   -webkit-overflow-scrolling: touch;
+  /* Better touch handling */
+  touch-action: pan-y;
 }
 
 /* News strip - the core element */
@@ -251,8 +253,8 @@
 /* Category navigation - horizontal scroll */
 .category-nav {
   position: sticky;
-  top: 0;
-  z-index: 100;
+  top: 80px; /* Account for navbar height */
+  z-index: 30; /* Lower than navbar's z-50 */
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -268,6 +270,7 @@
   overscroll-behavior-x: contain;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
 }
 
 .category-scroll::-webkit-scrollbar {
@@ -285,9 +288,13 @@
   transition: all 0.2s;
 }
 
+.category-pill.active {
+  background: var(--primary-gradient);
+  border-color: transparent;
+}
+
 .category-pill:active {
   transform: scale(0.95);
-  background: var(--primary-gradient);
 }
 
 /* Voice input button - fixed position */

@@ -1,15 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { AINews } from '../../types/ai';
 import { formatDistanceToNow } from '../../utils/dateUtils';
+import { LoadingSkeleton } from '../LoadingSkeleton';
+import { motion, AnimatePresence } from 'framer-motion';
+import { RefreshCw, Search } from 'lucide-react';
+import { haptics } from '../../utils/haptics';
 import '../../styles/mobile-prismatic-stream.css';
 
 interface MobilePrismaticStreamProps {
   articles: AINews[];
   onVoiceCommand?: (command: any) => void;
+  loading?: boolean;
+  onRefresh?: () => void;
 }
 
-export function MobilePrismaticStream({ articles, onVoiceCommand }: MobilePrismaticStreamProps) {
+export function MobilePrismaticStream({ articles, onVoiceCommand, loading = false, onRefresh }: MobilePrismaticStreamProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [pullDistance, setPullDistance] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const startY = useRef(0);
+  const isPulling = useRef(false);
   
   // Filter articles by category if selected
   const filteredArticles = selectedCategory 
@@ -21,52 +32,169 @@ export function MobilePrismaticStream({ articles, onVoiceCommand }: MobilePrisma
     (b.importance_score || 0) - (a.importance_score || 0)
   );
 
+  // Pull-to-refresh functionality
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || !onRefresh) return;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (container.scrollTop === 0) {
+        startY.current = e.touches[0].clientY;
+        isPulling.current = true;
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isPulling.current) return;
+      
+      const currentY = e.touches[0].clientY;
+      const distance = Math.max(0, currentY - startY.current);
+      
+      if (distance > 0 && container.scrollTop === 0) {
+        e.preventDefault();
+        setPullDistance(Math.min(distance, 150));
+      }
+    };
+
+    const handleTouchEnd = async () => {
+      if (!isPulling.current) return;
+      
+      isPulling.current = false;
+      
+      if (pullDistance > 80) {
+        setIsRefreshing(true);
+        await onRefresh();
+        setIsRefreshing(false);
+      }
+      
+      setPullDistance(0);
+    };
+
+    container.addEventListener('touchstart', handleTouchStart, { passive: false });
+    container.addEventListener('touchmove', handleTouchMove, { passive: false });
+    container.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [pullDistance, onRefresh]);
+
   return (
-    <div className="prismatic-container">
+    <div ref={containerRef} className="prismatic-container" style={{ transform: `translateY(${pullDistance}px)` }}>
+      {/* Pull-to-refresh indicator */}
+      <AnimatePresence>
+        {(pullDistance > 0 || isRefreshing) && (
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            className="absolute top-0 left-0 right-0 flex justify-center py-4 z-40"
+          >
+            <div className="flex items-center gap-2 text-white">
+              <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <span className="text-sm">
+                {isRefreshing ? 'Refreshing...' : pullDistance > 80 ? 'Release to refresh' : 'Pull to refresh'}
+              </span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* Category navigation */}
       <nav className="category-nav">
         <div className="category-scroll">
           <button 
             className={`category-pill ${!selectedCategory ? 'active' : ''}`}
-            onClick={() => setSelectedCategory(null)}
+            onClick={() => {
+              haptics.light();
+              setSelectedCategory(null);
+            }}
           >
             All
           </button>
           <button 
-            className="category-pill"
-            onClick={() => setSelectedCategory('ai')}
+            className={`category-pill ${selectedCategory === 'ai' ? 'active' : ''}`}
+            onClick={() => {
+              haptics.light();
+              setSelectedCategory('ai');
+            }}
           >
             🤖 AI
           </button>
           <button 
-            className="category-pill"
-            onClick={() => setSelectedCategory('world')}
+            className={`category-pill ${selectedCategory === 'world' ? 'active' : ''}`}
+            onClick={() => {
+              haptics.light();
+              setSelectedCategory('world');
+            }}
           >
             🌍 World
           </button>
           <button 
-            className="category-pill"
-            onClick={() => setSelectedCategory('business')}
+            className={`category-pill ${selectedCategory === 'business' ? 'active' : ''}`}
+            onClick={() => {
+              haptics.light();
+              setSelectedCategory('business');
+            }}
           >
             💼 Business
           </button>
           <button 
-            className="category-pill"
-            onClick={() => setSelectedCategory('nyc')}
+            className={`category-pill ${selectedCategory === 'nyc' ? 'active' : ''}`}
+            onClick={() => {
+              haptics.light();
+              setSelectedCategory('nyc');
+            }}
           >
             🗽 NYC
           </button>
           <button 
-            className="category-pill"
-            onClick={() => setSelectedCategory('costa-rica')}
+            className={`category-pill ${selectedCategory === 'costa-rica' ? 'active' : ''}`}
+            onClick={() => {
+              haptics.light();
+              setSelectedCategory('costa-rica');
+            }}
           >
             🌴 Costa Rica
           </button>
         </div>
       </nav>
 
+      {/* Loading state */}
+      {loading && (
+        <div className="px-4 py-2">
+          <LoadingSkeleton variant="news-strip" count={8} />
+        </div>
+      )}
+
+      {/* No results state */}
+      {!loading && sortedArticles.length === 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col items-center justify-center py-20 px-6"
+        >
+          <Search className="w-16 h-16 text-gray-600 mb-4" />
+          <h3 className="text-xl font-medium text-gray-300 mb-2">No articles found</h3>
+          <p className="text-gray-500 text-center">
+            {selectedCategory 
+              ? `No ${selectedCategory} articles available right now`
+              : 'No articles match your current filters'}
+          </p>
+          {selectedCategory && (
+            <button
+              onClick={() => setSelectedCategory(null)}
+              className="mt-4 px-4 py-2 bg-purple-600/20 text-purple-400 rounded-lg hover:bg-purple-600/30 transition-colors"
+            >
+              View all articles
+            </button>
+          )}
+        </motion.div>
+      )}
+
       {/* News strips */}
-      {sortedArticles.map((article, index) => (
+      {!loading && sortedArticles.map((article, index) => (
         <a 
           key={article.id}
           href={`#article-${article.id}`}
@@ -135,7 +263,10 @@ export function MobilePrismaticStream({ articles, onVoiceCommand }: MobilePrisma
       {/* Voice input FAB */}
       <button 
         className="voice-fab"
-        onClick={() => onVoiceCommand?.({ type: 'toggle' })}
+        onClick={() => {
+          haptics.medium();
+          onVoiceCommand?.({ type: 'toggle' });
+        }}
         aria-label="Voice commands"
       >
         🎤
