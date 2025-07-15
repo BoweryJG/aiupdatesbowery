@@ -1,6 +1,9 @@
 import { create } from 'zustand';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 import type { AIModel, AICategory } from '../types/ai';
-import { aiApi } from '../lib/supabase';
+import { aiApi, supabase } from '../lib/supabase';
+
+let updatesChannel: RealtimeChannel | null = null;
 
 interface AIStore {
   models: AIModel[];
@@ -16,6 +19,8 @@ interface AIStore {
   setSelectedCompany: (company: string | null) => void;
   setSearchTerm: (term: string) => void;
   getFilteredModels: () => AIModel[];
+  subscribeToUpdates: () => void;
+  unsubscribeFromUpdates: () => void;
 }
 
 export const useAIStore = create<AIStore>((set, get) => ({
@@ -53,5 +58,27 @@ export const useAIStore = create<AIStore>((set, get) => ({
       
       return matchesCategory && matchesCompany && matchesSearch;
     });
+  },
+
+  subscribeToUpdates: () => {
+    if (updatesChannel) return;
+    updatesChannel = supabase
+      .channel('ai_updates_channel')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'ai_updates' },
+        payload => {
+          const newModel = payload.new as AIModel;
+          set(state => ({ models: [newModel, ...state.models] }));
+        }
+      )
+      .subscribe();
+  },
+
+  unsubscribeFromUpdates: () => {
+    if (updatesChannel) {
+      updatesChannel.unsubscribe();
+      updatesChannel = null;
+    }
   }
 }));

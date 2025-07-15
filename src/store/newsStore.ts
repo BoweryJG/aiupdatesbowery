@@ -1,6 +1,19 @@
 import { create } from 'zustand';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 import type { AINews, NewsFilters, NewsCategory } from '../types/ai';
-import { newsApi } from '../lib/supabase';
+import { newsApi, supabase } from '../lib/supabase';
+
+let newsChannel: RealtimeChannel | null = null;
+
+const isToday = (dateStr: string) => {
+  const d = new Date(dateStr);
+  const now = new Date();
+  return (
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate()
+  );
+};
 
 interface NewsStore {
   news: AINews[];
@@ -21,6 +34,8 @@ interface NewsStore {
   setTagsFilter: (tags: string[]) => void;
   setMinImportanceScore: (score: number | undefined) => void;
   incrementViewCount: (newsId: string) => Promise<void>;
+  subscribeToNews: () => void;
+  unsubscribeFromNews: () => void;
 }
 
 export const useNewsStore = create<NewsStore>((set, get) => ({
@@ -99,6 +114,33 @@ export const useNewsStore = create<NewsStore>((set, get) => ({
       await newsApi.incrementViewCount(newsId);
     } catch (error) {
       console.error('Failed to increment view count:', error);
+    }
+  },
+
+  subscribeToNews: () => {
+    if (newsChannel) return;
+    newsChannel = supabase
+      .channel('ai_news_channel')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'ai_news' },
+        payload => {
+          const newArticle = payload.new as AINews;
+          set(state => ({
+            news: [newArticle, ...state.news],
+            todaysHeadlines: isToday(newArticle.published_date)
+              ? [newArticle, ...state.todaysHeadlines]
+              : state.todaysHeadlines
+          }));
+        }
+      )
+      .subscribe();
+  },
+
+  unsubscribeFromNews: () => {
+    if (newsChannel) {
+      newsChannel.unsubscribe();
+      newsChannel = null;
     }
   }
 }));
