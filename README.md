@@ -61,6 +61,8 @@ Create a `.env` file based on `.env.example`:
 ```env
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_URL=your_supabase_url
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ```
 
 ## Database Setup
@@ -76,6 +78,35 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
    ```
 
 3. Schedule the Edge Function to run periodically (e.g., every 30 minutes)
+
+## Edge Function: fetch-news
+
+The `fetch-news` function aggregates several RSS feeds and inserts new articles
+into the `ai_news` table using the `rss-parser` package.
+
+### Local testing
+
+1. Install the Supabase CLI if you haven't already:
+   ```bash
+   npm install -g supabase
+   ```
+2. Start the local Supabase stack:
+   ```bash
+   supabase start
+   ```
+3. Serve the function locally:
+   ```bash
+   supabase functions serve fetch-news --no-verify-jwt
+   ```
+   The function reads configuration from the `.env` file.
+
+### Deploying the function
+
+Deploy the function to your project:
+
+```bash
+supabase functions deploy fetch-news
+```
 
 ## News Sources
 
