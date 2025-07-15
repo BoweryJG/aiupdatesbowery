@@ -65,9 +65,10 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ## Database Setup
 
-1. Run the migration script in Supabase:
+1. Run the migration scripts in Supabase:
    ```sql
    -- Execute the contents of supabase/migrations/001_create_ai_news_table.sql
+   -- Execute the contents of supabase/migrations/002_increment_view_count_function.sql
    ```
 
 2. Set up the Edge Function for news fetching:
