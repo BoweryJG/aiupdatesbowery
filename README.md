@@ -78,7 +78,11 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
    supabase functions deploy fetch-news
    ```
 
-3. Schedule the Edge Function to run periodically (e.g., every 30 minutes)
+3. Schedule the Edge Function to run periodically (e.g., every 30 minutes).
+   Once running, the `fetch-news` function automatically pulls stories from
+   the sources below, categorizes them and inserts them into the `ai_news`
+   table. New articles will then show up on the dashboard without any manual
+   steps.
 
 ## Edge Function: fetch-news
 
