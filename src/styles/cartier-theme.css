@@ -1,0 +1,270 @@
+/* Cartier-inspired Luxury Theme */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
+
+/* Root variables for luxury theme */
+:root {
+  /* Luxury colors inspired by Cartier */
+  --cartier-red: #C40000;
+  --cartier-gold: #D4AF37;
+  --cartier-platinum: #E5E4E2;
+  --cartier-black: #0A0A0A;
+  --cartier-cream: #FAF9F6;
+  
+  /* Extended palette */
+  --luxury-purple: #6B46C1;
+  --luxury-blue: #2563EB;
+  --luxury-emerald: #059669;
+  --luxury-rose: #E11D48;
+  
+  /* Gradients */
+  --gradient-gold: linear-gradient(135deg, #D4AF37 0%, #F7E98E 50%, #D4AF37 100%);
+  --gradient-platinum: linear-gradient(135deg, #E5E4E2 0%, #F8F8F8 50%, #E5E4E2 100%);
+  --gradient-luxury: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(229, 228, 226, 0.05) 100%);
+  
+  /* Typography */
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
+  
+  /* Spacing */
+  --spacing-luxury: 2rem;
+  --spacing-elegant: 1.5rem;
+  
+  /* Animations */
+  --transition-luxury: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-elegant: all 0.3s ease-in-out;
+}
+
+/* Global luxury styles */
+.luxury-container {
+  background: var(--gradient-luxury);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Luxury typography */
+.luxury-heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.luxury-text {
+  font-family: var(--font-body);
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  color: var(--cartier-platinum);
+}
+
+/* Luxury buttons */
+.luxury-button {
+  position: relative;
+  padding: 0.75rem 2rem;
+  font-family: var(--font-body);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  background: transparent;
+  border: 1px solid var(--cartier-gold);
+  color: var(--cartier-gold);
+  overflow: hidden;
+  transition: var(--transition-luxury);
+}
+
+.luxury-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--gradient-gold);
+  transition: left 0.4s ease;
+  z-index: -1;
+}
+
+.luxury-button:hover {
+  color: var(--cartier-black);
+  border-color: transparent;
+}
+
+.luxury-button:hover::before {
+  left: 0;
+}
+
+/* Luxury cards */
+.luxury-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(10, 10, 10, 0.8) 0%, rgba(10, 10, 10, 0.6) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.1);
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: var(--transition-elegant);
+}
+
+.luxury-card::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: var(--gradient-gold);
+  opacity: 0;
+  border-radius: 1rem;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.luxury-card:hover::before {
+  opacity: 0.3;
+}
+
+/* Luxury dividers */
+.luxury-divider {
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    var(--cartier-gold) 25%, 
+    var(--cartier-gold) 75%, 
+    transparent 100%
+  );
+  margin: var(--spacing-luxury) 0;
+}
+
+/* Luxury badge */
+.luxury-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 2rem;
+  color: var(--cartier-gold);
+}
+
+/* Luxury modal overlay */
+.luxury-modal-overlay {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(10, 10, 10, 0.95) 0%,
+    rgba(0, 0, 0, 0.98) 100%
+  );
+  backdrop-filter: blur(30px) saturate(150%);
+}
+
+/* Luxury shimmer effect */
+@keyframes luxury-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.luxury-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.luxury-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(212, 175, 55, 0.1) 50%,
+    transparent 60%
+  );
+  animation: luxury-shimmer 2s infinite;
+}
+
+/* Luxury loading animation */
+@keyframes luxury-pulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.luxury-loading {
+  animation: luxury-pulse 2s ease-in-out infinite;
+}
+
+/* News type specific accents */
+.news-accent-ai {
+  border-top: 2px solid var(--luxury-purple);
+}
+
+.news-accent-world {
+  border-top: 2px solid var(--luxury-blue);
+}
+
+.news-accent-business {
+  border-top: 2px solid var(--luxury-emerald);
+}
+
+.news-accent-nyc {
+  border-top: 2px solid var(--luxury-rose);
+}
+
+.news-accent-costa-rica {
+  border-top: 2px solid var(--cartier-gold);
+}
+
+/* Luxury scrollbar */
+.luxury-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.luxury-scroll::-webkit-scrollbar-track {
+  background: rgba(10, 10, 10, 0.5);
+}
+
+.luxury-scroll::-webkit-scrollbar-thumb {
+  background: var(--gradient-gold);
+  border-radius: 4px;
+}
+
+.luxury-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--cartier-gold);
+}
+
+/* Responsive luxury adjustments */
+@media (max-width: 768px) {
+  :root {
+    --spacing-luxury: 1.5rem;
+    --spacing-elegant: 1rem;
+  }
+  
+  .luxury-heading {
+    font-size: 2rem;
+  }
+  
+  .luxury-button {
+    padding: 0.625rem 1.5rem;
+    font-size: 0.75rem;
+  }
+}

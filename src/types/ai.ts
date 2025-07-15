@@ -80,6 +80,14 @@ export interface AINews {
   view_count: number;
   created_at: string;
   updated_at: string;
+  // New fields for expanded news system
+  news_type?: 'ai' | 'world' | 'business' | 'nyc' | 'costa-rica' | 'local';
+  location?: string;
+  sub_location?: string;
+  link_status?: 'unchecked' | 'valid' | 'invalid' | 'archived';
+  last_validated?: string;
+  alternate_url?: string;
+  language?: string;
 }
 
 export type NewsCategory = 

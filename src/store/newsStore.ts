@@ -45,7 +45,9 @@ export const useNewsStore = create<NewsStore>((set, get) => ({
   loading: false,
   error: null,
   filters: {
-    dateRange: 'today'
+    dateRange: 'today',
+    newsType: undefined,
+    location: undefined
   },
 
   fetchTodaysHeadlines: async () => {

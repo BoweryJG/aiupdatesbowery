@@ -1,0 +1,366 @@
+/* Prismatic Stream - Ultra-optimized Mobile CSS News Layout */
+
+/* Performance optimizations */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  scroll-behavior: smooth;
+}
+
+/* CSS Custom Properties for instant theming */
+:root {
+  --stream-angle: 1.5deg;
+  --strip-height: 48px;
+  --strip-gap: 2px;
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --glass-bg: rgba(255, 255, 255, 0.02);
+  --glass-border: rgba(255, 255, 255, 0.05);
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0a0;
+  
+  /* Performance hints */
+  --transform-3d: translate3d(0, 0, 0);
+}
+
+/* Container with CSS containment for performance */
+.prismatic-container {
+  width: 100vw;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  contain: layout style paint;
+  background: #000;
+  position: relative;
+  /* Enable momentum scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* News strip - the core element */
+.news-strip {
+  height: var(--strip-height);
+  margin-bottom: var(--strip-gap);
+  position: relative;
+  contain: layout style;
+  cursor: pointer;
+  /* Hardware acceleration */
+  transform: var(--transform-3d);
+  will-change: auto;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Alternating angles for dynamic feel */
+.news-strip:nth-child(odd) {
+  transform: rotate(var(--stream-angle)) var(--transform-3d);
+  transform-origin: left center;
+}
+
+.news-strip:nth-child(even) {
+  transform: rotate(calc(var(--stream-angle) * -1)) var(--transform-3d);
+  transform-origin: right center;
+}
+
+/* Strip content layout using flexbox */
+.strip-content {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Category accent line */
+.strip-content::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--primary-gradient);
+  opacity: 0.8;
+}
+
+/* News type indicators with gradients */
+.strip-content[data-type="ai"]::before { background: linear-gradient(180deg, #667eea, #764ba2); }
+.strip-content[data-type="world"]::before { background: linear-gradient(180deg, #4facfe, #00f2fe); }
+.strip-content[data-type="business"]::before { background: linear-gradient(180deg, #43e97b, #38f9d7); }
+.strip-content[data-type="nyc"]::before { background: linear-gradient(180deg, #fa709a, #fee140); }
+.strip-content[data-type="costa-rica"]::before { background: linear-gradient(180deg, #30cfd0, #330867); }
+
+/* Micro thumbnail with lazy loading */
+.strip-thumbnail {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  object-fit: cover;
+  margin-right: 12px;
+  flex-shrink: 0;
+  /* Native lazy loading */
+  loading: lazy;
+  /* Smooth image appearance */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.strip-thumbnail[src] {
+  opacity: 1;
+}
+
+/* Typography optimized for mobile */
+.strip-text {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0; /* Enable text truncation */
+}
+
+.strip-headline {
+  flex: 1;
+  font-size: clamp(13px, 3.5vw, 15px);
+  font-weight: 400;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+}
+
+/* Source and time in single line */
+.strip-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* Unicode icons for zero image overhead */
+.strip-meta::before {
+  content: '•';
+  color: var(--text-secondary);
+}
+
+/* Importance indicator using CSS only */
+.strip-importance {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+.strip-importance[data-level="high"] {
+  background: #ff4458;
+  animation: pulse 2s infinite;
+}
+
+/* Pure CSS pulse animation */
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* Hover state - prepare for expansion */
+.news-strip:hover {
+  transform: rotate(0deg) scale(1.02) var(--transform-3d);
+  z-index: 10;
+  will-change: transform;
+}
+
+.news-strip:hover .strip-content {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Active/expanded state using :target */
+.news-strip:target {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: 1000;
+  margin: 0;
+  transform: none !important;
+  animation: expand 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes expand {
+  from {
+    opacity: 0.8;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Expanded article view */
+.news-strip:target .strip-content {
+  height: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(20px);
+}
+
+.news-strip:target .strip-thumbnail {
+  width: 100%;
+  height: 200px;
+  margin: 0 0 16px 0;
+  border-radius: 12px;
+}
+
+.news-strip:target .strip-headline {
+  font-size: 24px;
+  white-space: normal;
+  line-height: 1.3;
+  margin-bottom: 12px;
+}
+
+/* Hidden content revealed on expand */
+.strip-full-content {
+  display: none;
+  opacity: 0;
+}
+
+.news-strip:target .strip-full-content {
+  display: block;
+  opacity: 1;
+  animation: fadeIn 0.4s ease-out 0.2s forwards;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+/* Category navigation - horizontal scroll */
+.category-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+  contain: layout style;
+}
+
+.category-scroll {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.category-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.category-pill {
+  padding: 6px 16px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.category-pill:active {
+  transform: scale(0.95);
+  background: var(--primary-gradient);
+}
+
+/* Voice input button - fixed position */
+.voice-fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 200;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.voice-fab:active {
+  transform: scale(0.9);
+}
+
+/* Performance optimizations for scrolling */
+.prismatic-container::-webkit-scrollbar {
+  width: 3px;
+}
+
+.prismatic-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.prismatic-container::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 3px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .news-strip {
+    transform: none !important;
+  }
+}
+
+/* Landscape adjustments */
+@media (orientation: landscape) and (max-height: 500px) {
+  :root {
+    --strip-height: 40px;
+    --stream-angle: 1deg;
+  }
+  
+  .strip-thumbnail {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* Dark mode optimizations */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --glass-bg: rgba(255, 255, 255, 0.02);
+    --glass-border: rgba(255, 255, 255, 0.05);
+  }
+}
+
+/* CSS-only lazy loading for below-fold content */
+.news-strip:nth-child(n+20) {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 var(--strip-height);
+}
