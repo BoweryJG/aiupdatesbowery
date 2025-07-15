@@ -88,7 +88,7 @@ export async function fetchRSSFeeds() {
 }
 
 // Helper function to extract tags from content
-function extractTags(content: string): string[] {
+export function extractTags(content: string): string[] {
   const aiKeywords = [
     'gpt', 'llm', 'transformer', 'neural network', 'machine learning',
     'deep learning', 'ai safety', 'chatbot', 'computer vision', 'nlp',

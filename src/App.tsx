@@ -6,13 +6,15 @@ import { ModelCard } from './components/ui/ModelCard';
 import { Glass } from './components/ui/Glass';
 import { TodaysHeadlines } from './components/TodaysHeadlines';
 import { NewsFilterBar } from './components/ui/NewsFilterBar';
+import { WeekInReview } from './components/WeekInReview';
+import { MonthInReview } from './components/MonthInReview';
 import { useAIStore } from './store/aiStore';
 import { useNewsStore } from './store/newsStore';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, TrendingUp, Globe, Newspaper, Brain } from 'lucide-react';
+import { Sparkles, TrendingUp, Globe, Newspaper, Brain, Calendar, BarChart3 } from 'lucide-react';
 
 function App() {
-  const [view, setView] = useState<'headlines' | 'models'>('headlines');
+  const [view, setView] = useState<'headlines' | 'models' | 'week' | 'month'>('headlines');
   const { fetchModels, getFilteredModels, loading, error } = useAIStore();
   const { todaysHeadlines } = useNewsStore();
   const filteredModels = getFilteredModels();
@@ -59,27 +61,53 @@ function App() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setView('headlines')}
-              className={`px-6 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
+              className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
                 view === 'headlines' 
                   ? 'bg-electric-cyan text-black' 
                   : 'text-gray-400 hover:text-white'
               }`}
             >
               <Newspaper className="w-4 h-4" />
-              Today's Headlines
+              Today
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setView('week')}
+              className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
+                view === 'week' 
+                  ? 'bg-neon-green text-black' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <Calendar className="w-4 h-4" />
+              Week
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setView('month')}
+              className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
+                view === 'month' 
+                  ? 'bg-solar-orange text-black' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <BarChart3 className="w-4 h-4" />
+              Month
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setView('models')}
-              className={`px-6 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
+              className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
                 view === 'models' 
                   ? 'bg-quantum-purple text-white' 
                   : 'text-gray-400 hover:text-white'
               }`}
             >
               <Brain className="w-4 h-4" />
-              AI Models
+              Models
             </motion.button>
           </Glass>
         </div>
@@ -132,11 +160,15 @@ function App() {
         </div>
 
         {/* Filter Bar */}
-        {view === 'headlines' ? <NewsFilterBar /> : <FilterBar />}
+        {view === 'headlines' || view === 'week' || view === 'month' ? <NewsFilterBar /> : <FilterBar />}
 
         {/* Main Content */}
         {view === 'headlines' ? (
           <TodaysHeadlines />
+        ) : view === 'week' ? (
+          <WeekInReview />
+        ) : view === 'month' ? (
+          <MonthInReview />
         ) : (
           <>
             {/* Loading State */}

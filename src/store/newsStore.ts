@@ -12,7 +12,7 @@ interface NewsStore {
   
   // Actions
   fetchTodaysHeadlines: () => Promise<void>;
-  fetchNewsWithFilters: () => Promise<void>;
+  fetchNewsWithFilters: () => Promise<AINews[]>;
   fetchTrendingTopics: () => Promise<void>;
   setDateRange: (range: 'today' | 'week' | 'month' | 'all') => void;
   setCategory: (category: NewsCategory | undefined) => void;
@@ -48,8 +48,10 @@ export const useNewsStore = create<NewsStore>((set, get) => ({
     try {
       const data = await newsApi.getNewsWithFilters(get().filters);
       set({ news: data, loading: false });
+      return data; // Return data for components that need it
     } catch (error) {
       set({ error: (error as Error).message, loading: false });
+      return [];
     }
   },
 
