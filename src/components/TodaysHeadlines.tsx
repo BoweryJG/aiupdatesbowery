@@ -7,11 +7,20 @@ import { Glass } from './ui/Glass';
 import { GlowText } from './ui/GlowText';
 
 export function TodaysHeadlines() {
-  const { todaysHeadlines, loading, error, fetchTodaysHeadlines } = useNewsStore();
+  const {
+    todaysHeadlines,
+    loading,
+    error,
+    fetchTodaysHeadlines,
+    subscribeToNews,
+    unsubscribeFromNews
+  } = useNewsStore();
 
   useEffect(() => {
     fetchTodaysHeadlines();
-  }, [fetchTodaysHeadlines]);
+    subscribeToNews();
+    return () => unsubscribeFromNews();
+  }, [fetchTodaysHeadlines, subscribeToNews, unsubscribeFromNews]);
 
   const criticalNews = todaysHeadlines.filter(news => news.importance_score && news.importance_score >= 8);
   const importantNews = todaysHeadlines.filter(news => news.importance_score && news.importance_score >= 6 && news.importance_score < 8);

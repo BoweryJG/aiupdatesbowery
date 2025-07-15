@@ -15,13 +15,22 @@ import { Sparkles, TrendingUp, Globe, Newspaper, Brain, Calendar, BarChart3 } fr
 
 function App() {
   const [view, setView] = useState<'headlines' | 'models' | 'week' | 'month'>('headlines');
-  const { fetchModels, getFilteredModels, loading, error } = useAIStore();
+  const {
+    fetchModels,
+    getFilteredModels,
+    loading,
+    error,
+    subscribeToUpdates,
+    unsubscribeFromUpdates
+  } = useAIStore();
   const { todaysHeadlines } = useNewsStore();
   const filteredModels = getFilteredModels();
 
   useEffect(() => {
     fetchModels();
-  }, [fetchModels]);
+    subscribeToUpdates();
+    return () => unsubscribeFromUpdates();
+  }, [fetchModels, subscribeToUpdates, unsubscribeFromUpdates]);
 
   return (
     <Layout>
