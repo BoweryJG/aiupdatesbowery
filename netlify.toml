@@ -6,3 +6,10 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+[functions]
+  directory = "netlify/functions"
+
+# Schedule Reddit news fetch every 2 hours
+[[functions."fetch-reddit-news".schedule]]
+  cron = "0 */2 * * *"
