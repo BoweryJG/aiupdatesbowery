@@ -10,6 +10,5 @@
 [functions]
   directory = "netlify/functions"
 
-# Schedule Reddit news fetch every 2 hours
-[[functions."fetch-reddit-news".schedule]]
-  cron = "0 */2 * * *"
+[functions.fetch-reddit-news]
+  schedule = "0 */2 * * *"
