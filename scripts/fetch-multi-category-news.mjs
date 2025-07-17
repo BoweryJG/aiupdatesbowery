@@ -1,6 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 import Parser from 'rss-parser';
 import fetch from 'node-fetch';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 // Define RSS feeds and configuration directly in the script
 const RSS_FEEDS = [
   // AI & Technology (existing feeds)
