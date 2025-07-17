@@ -60,7 +60,7 @@ export const useNewsStore = create<NewsStore>((set, get) => ({
   errorDetails: null,
   isOffline: !isOnline(),
   filters: {
-    dateRange: 'today',
+    dateRange: 'week',
     newsType: undefined,
     location: undefined
   },
