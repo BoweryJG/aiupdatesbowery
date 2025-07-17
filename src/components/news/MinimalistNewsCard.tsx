@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
-import { Clock, MapPin, AlertCircle, ImageOff } from 'lucide-react';
-import { useState, useCallback } from 'react';
+import { Clock, MapPin, AlertCircle } from 'lucide-react';
 import type { AINews } from '../../types/ai';
 import { formatDistanceToNow } from '../../utils/dateUtils';
 import { useLinkValidation } from '../../services/linkValidator';
+import { ResponsiveImage } from '../ui/ResponsiveImage';
 
 interface MinimalistNewsCardProps {
   news: AINews;
@@ -13,8 +13,6 @@ interface MinimalistNewsCardProps {
 
 export function MinimalistNewsCard({ news, onClick, index = 0 }: MinimalistNewsCardProps) {
   const linkValidation = useLinkValidation(news.source_url);
-  const [imageError, setImageError] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
   
   // Extract image URL from nested structure
   const getImageUrl = () => {
@@ -53,18 +51,7 @@ export function MinimalistNewsCard({ news, onClick, index = 0 }: MinimalistNewsC
     return '';
   };
 
-  const handleImageError = useCallback(() => {
-    setImageError(true);
-  }, []);
 
-  const handleImageLoad = useCallback(() => {
-    setImageLoaded(true);
-  }, []);
-
-  // Fallback image - a branded placeholder
-  const fallbackImage = `data:image/svg+xml,%3Csvg width='800' height='450' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='gradient' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23111827;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%231f2937;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='800' height='450' fill='url(%23gradient)'/%3E%3Ctext x='50%25' y='50%25' font-family='system-ui' font-size='24' fill='%236b7280' text-anchor='middle' dominant-baseline='middle'%3EAI Updates%3C/text%3E%3C/svg%3E`;
-
-  const shouldShowImage = imageUrl && !imageError;
 
   return (
     <motion.article
@@ -83,40 +70,18 @@ export function MinimalistNewsCard({ news, onClick, index = 0 }: MinimalistNewsC
         {/* Category accent line */}
         <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${getNewsTypeAccent(news.news_type)} z-10`} />
 
-        {/* Image Section */}
-        <div className="relative aspect-[16/10] sm:aspect-video bg-gray-900/50 overflow-hidden group/image">
-          {/* Loading skeleton */}
-          {!imageLoaded && (
-            <div className="absolute inset-0 bg-gray-800/50">
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-700/30 to-transparent animate-shimmer" 
-                   style={{ backgroundSize: '200% 100%' }} />
-            </div>
-          )}
-          
-          {/* Image */}
-          <img
-            src={shouldShowImage ? imageUrl! : fallbackImage}
+        {/* Image Section - Mobile Optimized */}
+        <div className="relative bg-gray-900/50 overflow-hidden group/image">
+          <ResponsiveImage
+            src={imageUrl || ''}
             alt={news.title}
-            loading="lazy"
-            onError={handleImageError}
-            onLoad={handleImageLoad}
-            className={`w-full h-full object-cover transition-all duration-700 ${
-              imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
-            } group-hover/image:scale-110`}
+            className="group-hover/image:scale-110 transition-transform duration-500"
+            aspectRatio="4/3"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
           
           {/* Gradient overlay for better text readability */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-          
-          {/* Error state */}
-          {imageError && !shouldShowImage && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80">
-              <div className="text-center">
-                <ImageOff className="w-8 h-8 text-gray-600 mx-auto mb-2" />
-                <p className="text-xs text-gray-500">Image unavailable</p>
-              </div>
-            </div>
-          )}
           
           {/* Importance indicator overlay on image */}
           {news.importance_score && news.importance_score >= 7 && (
@@ -132,8 +97,8 @@ export function MinimalistNewsCard({ news, onClick, index = 0 }: MinimalistNewsC
           )}
         </div>
 
-        {/* Content */}
-        <div className="p-4 sm:p-5">
+        {/* Content - Mobile Optimized */}
+        <div className="p-3 sm:p-4 lg:p-5">
           {/* Header with metadata */}
           <div className="flex items-start justify-between gap-3 mb-3">
             <div className="flex-1 min-w-0">
@@ -152,11 +117,11 @@ export function MinimalistNewsCard({ news, onClick, index = 0 }: MinimalistNewsC
                 )}
               </div>
 
-              {/* Title */}
-              <h3 className="text-sm sm:text-base font-medium text-white line-clamp-2 
+              {/* Title - Mobile Optimized */}
+              <h3 className="text-sm sm:text-base lg:text-lg font-medium text-white line-clamp-2 
                            group-hover:text-transparent group-hover:bg-clip-text 
                            group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-300
-                           transition-all duration-300">
+                           transition-all duration-300 leading-tight">
                 {news.title}
               </h3>
             </div>

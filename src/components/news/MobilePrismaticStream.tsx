@@ -206,7 +206,7 @@ export function MobilePrismaticStream({ articles, onVoiceCommand, loading = fals
             className="strip-content" 
             data-type={article.news_type || 'ai'}
           >
-            {/* Micro thumbnail */}
+            {/* Micro thumbnail - Mobile Optimized */}
             {(() => {
               const imageUrl = article.image_url 
                 ? (typeof article.image_url === 'object' && article.image_url.$ 
@@ -223,8 +223,20 @@ export function MobilePrismaticStream({ articles, onVoiceCommand, loading = fals
                   alt=""
                   loading="lazy"
                   decoding="async"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                  style={{
+                    imageRendering: 'auto',
+                    objectFit: 'cover',
+                    aspectRatio: '1/1',
+                  }}
                 />
-              ) : null;
+              ) : (
+                <div className="strip-thumbnail bg-gray-800/50 flex items-center justify-center text-gray-600 text-xs">
+                  📰
+                </div>
+              );
             })()}
             
             {/* Text content */}
