@@ -23,12 +23,15 @@ jobs:
         npm install @supabase/supabase-js
         npm install rss-parser
         npm install node-fetch
+        npm install dotenv
     
     - name: Fetch and Insert Multi-Category News
       env:
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
         SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
+        NODE_TLS_REJECT_UNAUTHORIZED: '0'  # Allow self-signed certificates
+        NODE_OPTIONS: '--tls-min-v1.0 --tls-max-v1.3'  # TLS version range
       run: |
         node scripts/fetch-multi-category-news.mjs
     

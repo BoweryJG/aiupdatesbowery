@@ -69,10 +69,10 @@ const RSS_FEEDS = [
   // AI & Technology (existing feeds)
   { url: 'https://openai.com/blog/rss.xml', source: 'OpenAI Blog', newsType: 'ai', company: 'OpenAI', priority: 10 },
   { url: 'https://blog.google/technology/ai/rss/', source: 'Google AI Blog', newsType: 'ai', company: 'Google', priority: 10 },
-  { url: 'https://www.anthropic.com/index/rss.xml', source: 'Anthropic Blog', newsType: 'ai', company: 'Anthropic', priority: 10 },
+  { url: 'https://www.anthropic.com/news/rss.xml', source: 'Anthropic Blog', newsType: 'ai', company: 'Anthropic', priority: 10 },
   { url: 'https://techcrunch.com/category/artificial-intelligence/feed/', source: 'TechCrunch AI', newsType: 'ai', priority: 8 },
-  { url: 'https://venturebeat.com/ai/feed/', source: 'VentureBeat AI', newsType: 'ai', priority: 7 },
-  { url: 'https://www.theverge.com/ai-artificial-intelligence/rss/index.xml', source: 'The Verge AI', newsType: 'ai', priority: 7 },
+  { url: 'https://venturebeat.com/category/ai/feed/', source: 'VentureBeat AI', newsType: 'ai', priority: 7 },
+  { url: 'https://www.theverge.com/rss/index.xml', source: 'The Verge AI', newsType: 'ai', priority: 7 },
   { url: 'https://www.wired.com/feed/tag/ai/latest/rss', source: 'Wired AI', newsType: 'ai', priority: 7 },
   { url: 'https://arstechnica.com/ai/feed/', source: 'Ars Technica AI', newsType: 'ai', priority: 6 },
   
@@ -92,7 +92,7 @@ const RSS_FEEDS = [
   // NYC News
   { url: 'https://rss.nytimes.com/services/xml/rss/nyt/NYRegion.xml', source: 'NY Times Metro', newsType: 'nyc', location: 'New York', priority: 9 },
   { url: 'https://gothamist.com/feed', source: 'Gothamist', newsType: 'nyc', location: 'New York', priority: 8 },
-  { url: 'https://patch.com/new-york/new-york-city/rss.xml', source: 'NYC Patch', newsType: 'nyc', location: 'New York', priority: 6 },
+  { url: 'https://patch.com/feeds/all', source: 'NYC Patch', newsType: 'nyc', location: 'New York', priority: 6 },
   
   // Costa Rica News
   { url: 'https://ticotimes.net/feed', source: 'Tico Times', newsType: 'costa-rica', location: 'Costa Rica', language: 'en', priority: 9 },
@@ -143,23 +143,39 @@ const supabase = createClient(
   env.SUPABASE_SERVICE_KEY
 );
 
-// Initialize RSS parser
+// Initialize RSS parser with SSL configuration
 const parser = new Parser({
   customFields: {
     item: ['media:content', 'media:thumbnail', 'enclosure', 'dc:creator', 'author']
   },
-  timeout: 10000 // 10 second timeout
+  timeout: 15000, // 15 second timeout
+  headers: {
+    'User-Agent': 'Mozilla/5.0 (compatible; NewsAggregator/1.0)',
+    'Accept': 'application/rss+xml, application/xml, text/xml',
+    'Accept-Encoding': 'gzip, deflate'
+  },
+  requestOptions: {
+    rejectUnauthorized: false, // Allow self-signed certificates
+    timeout: 15000,
+    agent: false // Disable keep-alive for better SSL handling
+  }
 });
 
-// Link validator
+// Link validator with SSL fix
 async function validateLink(url) {
   try {
     const response = await fetch(url, {
       method: 'HEAD',
-      timeout: 5000,
+      timeout: 10000,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; NewsAggregator/1.0)'
-      }
+        'User-Agent': 'Mozilla/5.0 (compatible; NewsAggregator/1.0)',
+        'Accept': '*/*',
+        'Accept-Encoding': 'gzip, deflate',
+        'Connection': 'keep-alive'
+      },
+      // SSL/TLS options for node-fetch
+      agent: false,
+      rejectUnauthorized: false
     });
     return {
       isValid: response.ok,
@@ -315,15 +331,24 @@ async function fetchFromFeed(feed) {
   const fetchOperation = async () => {
     console.log(`Fetching from ${feed.source}...`);
     
-    // Create parser instance with timeout
+    // Create parser instance with enhanced SSL/TLS configuration
     const feedParser = new Parser({
       customFields: {
         item: ['media:content', 'media:thumbnail', 'enclosure', 'dc:creator', 'author']
       },
-      timeout: 15000, // 15 second timeout
+      timeout: 20000, // 20 second timeout for problematic feeds
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; NewsAggregator/1.0; +https://aiupdatesbowery.com)',
-        'Accept': 'application/rss+xml, application/xml, text/xml'
+        'Accept': 'application/rss+xml, application/xml, text/xml',
+        'Accept-Encoding': 'gzip, deflate',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive'
+      },
+      requestOptions: {
+        rejectUnauthorized: false, // Allow self-signed certificates
+        timeout: 20000,
+        agent: false, // Disable keep-alive for better SSL handling
+        secureProtocol: 'TLSv1_2_method' // Force TLS 1.2
       }
     });
     
