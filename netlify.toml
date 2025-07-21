@@ -10,5 +10,5 @@
 [functions]
   directory = "netlify/functions"
 
-[functions.fetch-reddit-news]
-  schedule = "0 */2 * * *"
+# [functions.fetch-reddit-news]
+#   schedule = "0 */2 * * *"
