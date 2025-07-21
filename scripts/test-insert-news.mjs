@@ -128,7 +128,7 @@ async function insertSampleNews() {
   try {
     // Insert the sample articles
     const { data, error } = await supabase
-      .from('news')
+      .from('ai_news')
       .insert(sampleArticles)
       .select();
     

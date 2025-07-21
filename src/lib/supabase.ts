@@ -383,7 +383,7 @@ export const newsApi = {
       today.setHours(0, 0, 0, 0);
       
       const { data, error } = await supabase
-        .from('news')
+        .from('ai_news')
         .select('*')
         .gte('published_date', today.toISOString())
         .eq('link_status', 'valid')

@@ -496,7 +496,7 @@ async function performHealthCheck() {
   try {
     // Test Supabase connection
     const { data, error } = await supabase
-      .from('news')
+      .from('ai_news')
       .select('count')
       .limit(1);
     
@@ -552,7 +552,7 @@ async function main() {
     
     // Check existing URLs in database from last 48 hours
     const { data: existingArticles } = await supabase
-      .from('news')
+      .from('ai_news')
       .select('source_url')
       .gte('created_at', new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString());
     
@@ -591,7 +591,7 @@ async function main() {
       
       // Insert into database
       const { data, error } = await supabase
-        .from('news')
+        .from('ai_news')
         .insert(validatedArticles)
         .select();
       
@@ -614,7 +614,7 @@ async function main() {
     // Clean up old articles (keep last 90 days) with error handling
     try {
       const { error: deleteError } = await supabase
-        .from('news')
+        .from('ai_news')
         .delete()
         .lt('published_date', new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString());
       

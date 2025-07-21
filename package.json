@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "fetch-news": "node scripts/fetch-multi-category-news.mjs",
+    "fetch-reddit": "node scripts/fetch-reddit-news.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.5.0",

@@ -192,7 +192,7 @@ async function main() {
     if (allArticles.length > 0) {
       // Check for duplicates
       const { data: existingArticles } = await supabase
-        .from('news')
+        .from('ai_news')
         .select('source_url')
         .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
       
@@ -214,7 +214,7 @@ async function main() {
         
         // Insert into database
         const { data, error } = await supabase
-          .from('news')
+          .from('ai_news')
           .insert(uniqueArticles)
           .select();
         

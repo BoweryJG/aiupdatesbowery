@@ -17,7 +17,7 @@ async function debugFrontend() {
     console.log(`Fetching news from today (${today.toISOString()})...`);
     
     const { data: todaysNews, error: todaysError } = await supabase
-      .from('news')
+      .from('ai_news')
       .select('*')
       .gte('published_date', today.toISOString())
       .eq('link_status', 'valid')
@@ -40,7 +40,7 @@ async function debugFrontend() {
     // Test 2: Get news with default filters (dateRange: 'today')
     console.log('\n\nTesting default filter query...');
     const { data: filteredNews, error: filterError } = await supabase
-      .from('news')
+      .from('ai_news')
       .select('*')
       .gte('published_date', today.toISOString())
       .neq('link_status', 'invalid')
@@ -57,7 +57,7 @@ async function debugFrontend() {
     // Test 3: Get ALL news (no date filter)
     console.log('\n\nFetching ALL news (no date filter)...');
     const { data: allNews, error: allError } = await supabase
-      .from('news')
+      .from('ai_news')
       .select('*')
       .neq('link_status', 'invalid')
       .order('published_date', { ascending: false })
@@ -80,7 +80,7 @@ async function debugFrontend() {
     // Test 4: Check for any link_status issues
     console.log('\n\nChecking link_status values...');
     const { data: statusCheck, error: statusError } = await supabase
-      .from('news')
+      .from('ai_news')
       .select('link_status')
       .limit(100);
     

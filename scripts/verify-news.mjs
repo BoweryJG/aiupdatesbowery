@@ -12,7 +12,7 @@ async function verifyNews() {
   try {
     // Get all news articles
     const { data: allNews, error: allError } = await supabase
-      .from('news')
+      .from('ai_news')
       .select('*')
       .order('published_date', { ascending: false });
     
@@ -25,7 +25,7 @@ async function verifyNews() {
     
     // Check by news type
     const { data: byType, error: typeError } = await supabase
-      .from('news')
+      .from('ai_news')
       .select('news_type')
       .order('news_type');
     

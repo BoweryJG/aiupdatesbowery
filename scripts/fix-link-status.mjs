@@ -13,7 +13,7 @@ async function fixLinkStatus() {
     // Update all articles with link_status 'unchecked' to 'valid'
     // In production, you'd actually validate each link, but for now we'll mark them as valid
     const { data, error } = await supabase
-      .from('news')
+      .from('ai_news')
       .update({ 
         link_status: 'valid',
         last_validated: new Date().toISOString()
@@ -29,7 +29,7 @@ async function fixLinkStatus() {
     
     // Verify the update
     const { data: checkData, error: checkError } = await supabase
-      .from('news')
+      .from('ai_news')
       .select('link_status');
     
     if (!checkError && checkData) {
@@ -50,7 +50,7 @@ async function fixLinkStatus() {
     today.setHours(0, 0, 0, 0);
     
     const { data: todaysValid, error: todaysError } = await supabase
-      .from('news')
+      .from('ai_news')
       .select('*')
       .gte('published_date', today.toISOString())
       .eq('link_status', 'valid')
